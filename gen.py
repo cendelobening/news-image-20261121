@@ -33,12 +33,20 @@ DARKRED = (120, 22, 22)
 # ------------------------------------------------------- 5x7 bitmap font
 # Each glyph is seven rows of five cells; '#' is ink, '.' is blank.
 # Shapes drawn from memory of ordinary block capitals.
-# v2 audit: 'V' is a sharp chevron converging from row 2 (never a 'U',
-# whose sides stay vertical to a flat base); 'K' has no top-right tip
-# so its top row cannot read as a 'T' bar; 'Y' keeps wide arms through
-# row 2 so it cannot read as 'V'; '5' keeps a clean right stem. The
-# rest of A-Z / 0-9 were checked for downscale confusion (M/N, G/C,
-# D/O, B/8, I/1, S/5, R/P, O/0) and left as drawn.
+# v3: 'V' and 'Y' are v1's exact definitions. A redesign was attempted
+# first (true-chevron V converging from row 1 + fork-and-stem Y) because
+# the blind panel's final verdict (9/9 for v1) noted KRYVYI misspells in
+# BOTH v1 ("KRYUYI", V reads as U) and v2 ("KRYYYI", V reads as Y).
+# It FAILED verification: on an alphabet + test-word strip the new V
+# read as Y at full size ("KRYVYI" -> "KRYYYI", "AKVAN" -> "AKYAN",
+# "NOVEMBER" -> "NOYEMBER") and identically at 300px, with V and Y
+# indistinguishable ("VUV YUY VY UY YV" -> "YUY YUY YY UY YY"). Per the
+# mandatory fallback, V/Y were reverted to v1 exactly -- v1's V reads
+# U-like at worst, which earned v1 its 0.9657 dev rate. 'U' stays v1's.
+# Kept from v2: 'K' has no top-right tip so its top row cannot read as
+# a 'T' bar; '5' keeps a clean right stem. The rest of A-Z / 0-9 were
+# checked for downscale confusion (M/N, G/C, D/O, B/8, I/1, S/5, R/P,
+# O/0) and left as drawn.
 GLYPHS = {
     "A": (".###.", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"),
     "B": ("####.", "#...#", "#...#", "####.", "#...#", "#...#", "####."),
@@ -61,10 +69,10 @@ GLYPHS = {
     "S": (".####", "#....", "#....", ".###.", "....#", "....#", "####."),
     "T": ("#####", "..#..", "..#..", "..#..", "..#..", "..#..", "..#.."),
     "U": ("#...#", "#...#", "#...#", "#...#", "#...#", "#...#", ".###."),
-    "V": ("#...#", "#...#", ".#.#.", ".#.#.", "..#..", "..#..", "..#.."),
+    "V": ("#...#", "#...#", "#...#", "#...#", "#...#", ".#.#.", "..#.."),
     "W": ("#...#", "#...#", "#...#", "#.#.#", "#.#.#", "##.##", "#...#"),
     "X": ("#...#", "#...#", ".#.#.", "..#..", ".#.#.", "#...#", "#...#"),
-    "Y": ("#...#", "#...#", "#...#", ".#.#.", "..#..", "..#..", "..#.."),
+    "Y": ("#...#", "#...#", ".#.#.", "..#..", "..#..", "..#..", "..#.."),
     "Z": ("#####", "....#", "...#.", "..#..", ".#...", "#....", "#####"),
     "0": (".###.", "#..##", "#.#.#", "##..#", "#...#", "#...#", ".###."),
     "1": ("..#..", ".##..", "..#..", "..#..", "..#..", "..#..", ".###."),
@@ -275,30 +283,32 @@ class FrontPage:
 # ------------------------------------------------------------- pictograms
 def lead_art(page):
     """Polish flag, missile and burst for the lead panel."""
-    # Polish flag: white over red (v2: enlarged to fill the lead panel).
-    page.block(48, 196, 168, 48, CREAM)
-    page.block(48, 244, 168, 48, RED)
-    page.outline(48, 196, 168, 96, INK, 3)
-    page.write(48, 300, "POLAND", 2, INK)
+    # Polish flag: white over red.
+    # v3: flag/missile/burst geometry reverted to v1 exactly (v2's
+    # enlargement and shifts are undone; only the glyphs and masthead
+    # insets from v2 are kept).
+    page.block(48, 196, 132, 40, CREAM)
+    page.block(48, 236, 132, 40, RED)
+    page.outline(48, 196, 132, 80, INK, 3)
+    page.write(48, 284, "POLAND", 2, INK)
     # Missile body, horizontal, nose to the right.
-    page.block(240, 236, 96, 14, NAVY)
-    page.fill_poly([(336, 230), (368, 243), (336, 256)], NAVY)
-    page.fill_poly([(248, 250), (232, 266), (256, 250)], NAVY)
-    page.fill_poly([(248, 240), (232, 224), (256, 240)], NAVY)
-    page.block(226, 238, 14, 10, GOLD)
+    page.block(220, 232, 96, 14, NAVY)
+    page.fill_poly([(316, 226), (348, 239), (316, 252)], NAVY)
+    page.fill_poly([(228, 246), (212, 262), (236, 246)], NAVY)
+    page.fill_poly([(228, 232), (212, 216), (236, 232)], NAVY)
+    page.block(206, 234, 14, 10, GOLD)
     # Flame trail behind the missile.
-    page.burst(230, 243, 12, 5, GOLD)
-    page.burst(230, 243, 8, 3, RED)
+    page.burst(196, 239, 16, 7, GOLD)
+    page.burst(196, 239, 10, 4, RED)
     # Explosion burst and a ring of small gold stars (NATO allies).
-    # v2: burst enlarged and moved up to close the empty gap under the flag.
-    page.burst(290, 345, 54, 22, GOLD)
-    page.burst(290, 345, 36, 14, RED)
-    page.burst(290, 345, 19, 8, CREAM)
+    page.burst(290, 355, 48, 20, GOLD)
+    page.burst(290, 355, 32, 13, RED)
+    page.burst(290, 355, 17, 7, CREAM)
     for k in range(8):
         angle = k * math.pi / 4
-        sx = int(290 + 76 * math.cos(angle))
-        sy = int(345 + 76 * math.sin(angle))
-        page.star(sx, sy, 10, 4, GOLD)
+        sx = int(290 + 70 * math.cos(angle))
+        sy = int(355 + 70 * math.sin(angle))
+        page.star(sx, sy, 9, 4, GOLD)
 
 
 def strike_art(page, x, y, w, h):
@@ -438,10 +448,10 @@ def build_page():
     page.write(380, 186, "WAR IN EUROPE", 2, RED)
     page.write(380, 210, "RUSSIAN MISSILES", 5, INK)
     page.write(380, 252, "CROSS INTO POLAND", 5, INK)
-    page.block(380, 300, 560, 4, GOLD)
+    page.block(380, 296, 560, 4, GOLD)
     page.paragraph(
         380,
-        316,
+        312,
         "Russian missiles and drones cross into Polish territory, and a "
         "detonation triggers an airspace-incursion probe. NATO allies "
         "respond as the alarm is raised over the breach.",
@@ -450,6 +460,10 @@ def build_page():
         600,
         gap=5,
     )
+    # v3: red "FULL STORY ON PAGE 2" restored (v2 deleted it; the blind
+    # panel majority wants it back -- it fills the lead box and is
+    # classic newspaper furniture).
+    page.write(380, 430, "FULL STORY ON PAGE 2", 2, RED)
 
     # -- grid row one: three panels --------------------------------------
     story_panel(

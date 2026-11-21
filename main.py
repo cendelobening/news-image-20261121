@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Entrypoint for the news-image-20261121 make.fun entry (v2 finals hardening).
+"""Entrypoint for the news-image-20261121 make.fun entry (v3 surgical merge:
+v1's accepted V/Y glyphs and lead-panel geometry + v2's layout fixes).
 
 Reads entry.png from this directory, validates that it is a well-formed
 1024x1024 8-bit RGB PNG under 1 MiB, then copies it byte-for-byte to
