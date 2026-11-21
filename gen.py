@@ -33,6 +33,12 @@ DARKRED = (120, 22, 22)
 # ------------------------------------------------------- 5x7 bitmap font
 # Each glyph is seven rows of five cells; '#' is ink, '.' is blank.
 # Shapes drawn from memory of ordinary block capitals.
+# v2 audit: 'V' is a sharp chevron converging from row 2 (never a 'U',
+# whose sides stay vertical to a flat base); 'K' has no top-right tip
+# so its top row cannot read as a 'T' bar; 'Y' keeps wide arms through
+# row 2 so it cannot read as 'V'; '5' keeps a clean right stem. The
+# rest of A-Z / 0-9 were checked for downscale confusion (M/N, G/C,
+# D/O, B/8, I/1, S/5, R/P, O/0) and left as drawn.
 GLYPHS = {
     "A": (".###.", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"),
     "B": ("####.", "#...#", "#...#", "####.", "#...#", "#...#", "####."),
@@ -44,7 +50,7 @@ GLYPHS = {
     "H": ("#...#", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"),
     "I": ("#####", "..#..", "..#..", "..#..", "..#..", "..#..", "#####"),
     "J": ("..###", "...#.", "...#.", "...#.", "...#.", "#..#.", ".##.."),
-    "K": ("#...#", "#..#.", "#.#..", "##...", "#.#..", "#..#.", "#...#"),
+    "K": ("#....", "#..#.", "#.#..", "##...", "#.#..", "#..#.", "#...#"),
     "L": ("#....", "#....", "#....", "#....", "#....", "#....", "#####"),
     "M": ("#...#", "##.##", "#.#.#", "#.#.#", "#...#", "#...#", "#...#"),
     "N": ("#...#", "##..#", "##..#", "#.#.#", "#..##", "#..##", "#...#"),
@@ -55,17 +61,17 @@ GLYPHS = {
     "S": (".####", "#....", "#....", ".###.", "....#", "....#", "####."),
     "T": ("#####", "..#..", "..#..", "..#..", "..#..", "..#..", "..#.."),
     "U": ("#...#", "#...#", "#...#", "#...#", "#...#", "#...#", ".###."),
-    "V": ("#...#", "#...#", "#...#", "#...#", "#...#", ".#.#.", "..#.."),
+    "V": ("#...#", "#...#", ".#.#.", ".#.#.", "..#..", "..#..", "..#.."),
     "W": ("#...#", "#...#", "#...#", "#.#.#", "#.#.#", "##.##", "#...#"),
     "X": ("#...#", "#...#", ".#.#.", "..#..", ".#.#.", "#...#", "#...#"),
-    "Y": ("#...#", "#...#", ".#.#.", "..#..", "..#..", "..#..", "..#.."),
+    "Y": ("#...#", "#...#", "#...#", ".#.#.", "..#..", "..#..", "..#.."),
     "Z": ("#####", "....#", "...#.", "..#..", ".#...", "#....", "#####"),
     "0": (".###.", "#..##", "#.#.#", "##..#", "#...#", "#...#", ".###."),
     "1": ("..#..", ".##..", "..#..", "..#..", "..#..", "..#..", ".###."),
     "2": (".###.", "#...#", "....#", "...#.", "..#..", ".#...", "#####"),
     "3": ("####.", "....#", "....#", ".###.", "....#", "....#", "####."),
     "4": ("...#.", "..##.", ".#.#.", "#..#.", "#####", "...#.", "...#."),
-    "5": ("#####", "#....", "####.", "....#", "....#", "#...#", ".###."),
+    "5": ("#####", "#....", "####.", "....#", "....#", "....#", "####."),
     "6": (".###.", "#....", "#....", "####.", "#...#", "#...#", ".###."),
     "7": ("#####", "....#", "...#.", "..#..", "..#..", "..#..", "..#.."),
     "8": (".###.", "#...#", "#...#", ".###.", "#...#", "#...#", ".###."),
@@ -269,29 +275,30 @@ class FrontPage:
 # ------------------------------------------------------------- pictograms
 def lead_art(page):
     """Polish flag, missile and burst for the lead panel."""
-    # Polish flag: white over red.
-    page.block(48, 196, 132, 40, CREAM)
-    page.block(48, 236, 132, 40, RED)
-    page.outline(48, 196, 132, 80, INK, 3)
-    page.write(48, 284, "POLAND", 2, INK)
+    # Polish flag: white over red (v2: enlarged to fill the lead panel).
+    page.block(48, 196, 168, 48, CREAM)
+    page.block(48, 244, 168, 48, RED)
+    page.outline(48, 196, 168, 96, INK, 3)
+    page.write(48, 300, "POLAND", 2, INK)
     # Missile body, horizontal, nose to the right.
-    page.block(220, 232, 96, 14, NAVY)
-    page.fill_poly([(316, 226), (348, 239), (316, 252)], NAVY)
-    page.fill_poly([(228, 246), (212, 262), (236, 246)], NAVY)
-    page.fill_poly([(228, 232), (212, 216), (236, 232)], NAVY)
-    page.block(206, 234, 14, 10, GOLD)
+    page.block(240, 236, 96, 14, NAVY)
+    page.fill_poly([(336, 230), (368, 243), (336, 256)], NAVY)
+    page.fill_poly([(248, 250), (232, 266), (256, 250)], NAVY)
+    page.fill_poly([(248, 240), (232, 224), (256, 240)], NAVY)
+    page.block(226, 238, 14, 10, GOLD)
     # Flame trail behind the missile.
-    page.burst(196, 239, 16, 7, GOLD)
-    page.burst(196, 239, 10, 4, RED)
+    page.burst(230, 243, 12, 5, GOLD)
+    page.burst(230, 243, 8, 3, RED)
     # Explosion burst and a ring of small gold stars (NATO allies).
-    page.burst(290, 355, 48, 20, GOLD)
-    page.burst(290, 355, 32, 13, RED)
-    page.burst(290, 355, 17, 7, CREAM)
+    # v2: burst enlarged and moved up to close the empty gap under the flag.
+    page.burst(290, 345, 54, 22, GOLD)
+    page.burst(290, 345, 36, 14, RED)
+    page.burst(290, 345, 19, 8, CREAM)
     for k in range(8):
         angle = k * math.pi / 4
-        sx = int(290 + 70 * math.cos(angle))
-        sy = int(355 + 70 * math.sin(angle))
-        page.star(sx, sy, 9, 4, GOLD)
+        sx = int(290 + 76 * math.cos(angle))
+        sy = int(345 + 76 * math.sin(angle))
+        page.star(sx, sy, 10, 4, GOLD)
 
 
 def strike_art(page, x, y, w, h):
@@ -356,8 +363,10 @@ def cop_art(page, x, y, w, h):
     page.disc(cx + 7, cy + 7, 7, GREEN)
     page.disc(cx + 8, cy - 8, 4, GREEN)
     page.ring(cx, cy, 20, 3, CREAM, SKY)
-    page.write(x + 112, y + 6, "COP31", 3, CREAM)
-    page.write(x + 112, y + 28, "FINAL STAGE", 3, GOLD)
+    # v2: band names the venue (COP31 - TURKEY) instead of repeating the
+    # headline below it ("COP31 ENTERS FINAL STAGE"). The bitmap font has
+    # no middle-dot glyph, so the separator is a hyphen.
+    page.write(x + 112, y + 14, "COP31 - TURKEY", 3, CREAM)
 
 
 def car_art(page, x, y, w, h):
@@ -410,16 +419,18 @@ def build_page():
 
     # -- masthead: deep navy band with the cream wordmark ----------------
     page.block(0, 0, PAGE_W, 104, NAVY)
-    page.write(24, 88, "No. 325", 2, GOLD)
-    page.write(1000, 88, "PRICE: FREE", 2, GOLD, align="right")
+    # v2: small texts sit at y=82 so their 14px glyphs (82..95) clear the
+    # gold rule at y=100; at y=88 their bottom rows were sliced by it.
+    page.write(40, 82, "No. 325", 2, GOLD)
+    page.write(984, 82, "PRICE: FREE", 2, GOLD, align="right")
     page.write(PAGE_W // 2, 14, "THE WORLD", 10, CREAM, align="center")
     page.block(0, 100, PAGE_W, 4, GOLD)
 
     # -- red date band ---------------------------------------------------
     page.block(0, 104, PAGE_W, 54, RED)
-    page.write(420, 122, "SATURDAY 21 NOVEMBER 2026", 4, CREAM, align="center")
-    page.block(852, 114, 140, 34, CREAM)
-    page.write(922, 122, "EXTRA", 4, RED, align="center")
+    page.write(512, 122, "SATURDAY 21 NOVEMBER 2026", 4, CREAM, align="center")
+    page.block(836, 114, 132, 34, CREAM)
+    page.write(902, 122, "EXTRA", 4, RED, align="center")
 
     # -- lead story ------------------------------------------------------
     page.outline(16, 168, 992, 302, INK, 3)
@@ -427,10 +438,10 @@ def build_page():
     page.write(380, 186, "WAR IN EUROPE", 2, RED)
     page.write(380, 210, "RUSSIAN MISSILES", 5, INK)
     page.write(380, 252, "CROSS INTO POLAND", 5, INK)
-    page.block(380, 296, 560, 4, GOLD)
+    page.block(380, 300, 560, 4, GOLD)
     page.paragraph(
         380,
-        312,
+        316,
         "Russian missiles and drones cross into Polish territory, and a "
         "detonation triggers an airspace-incursion probe. NATO allies "
         "respond as the alarm is raised over the breach.",
@@ -439,7 +450,6 @@ def build_page():
         600,
         gap=5,
     )
-    page.write(380, 430, "FULL STORY ON PAGE 2", 2, RED)
 
     # -- grid row one: three panels --------------------------------------
     story_panel(
